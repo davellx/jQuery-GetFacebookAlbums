@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<title>Davel | Charger ses albums Facebook avec Jquery</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		<script type="text/javascript" src="js/jquery.getfacebookalbums.js"></script>
+		<link rel="stylesheet" href="css/facebook.css" type="text/css">
+		<script type="text/javascript">
+				$(document).ready(function(){
+					$('#loadBtn').click(function(){
+						$('#albumsContainer').getFacebookAlbums({appId:'YOUR-APP-ID',onImageSelected:function(data){alert(data)}})
+						return false;
+					})
+				})
+		</script>
+		<style type="text/css">
+			html,body{
+				font-family:Arial,_sans;
+				font-size:0.8em;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Charger ses albums Facebook avec Jquery</h1>
+		<p><a id="loadBtn" href="#">Chercher les photos</a></p>
+		<div id="albumsContainer"></div>
+	</body>
+</html>
