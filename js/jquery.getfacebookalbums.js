@@ -64,12 +64,12 @@
 		//FB.getLoginStatus(function(response){console.log(response);});
 		
 		FB.login(function(response) {
-			if(response.perms && response.perms.indexOf('user_photos') != -1){
+			if(response.status == "connected"){//response.scope && response.scope.indexOf('user_photos') != -1){
 				getAlbums();
 			 }else{
 				$('#fbListAlbumsContainer').html(options.needAuthorizeLabel);
 			 }
-		 },{perms: 'user_photos'});
+		 },{scope: 'user_photos'});
 	}
 	
 	getAlbums = function(){
