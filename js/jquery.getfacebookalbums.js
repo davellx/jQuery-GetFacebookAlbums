@@ -90,7 +90,7 @@
 			contentHTML += '<li class="fbAlbum" id="album_'+counter+'">'+album.name+'</li>';
 			counter++
 		}
-		contentHTML += '<ul>';
+		contentHTML += '</ul>';
 		$('#fbListAlbumsContainer').html(contentHTML);
 		$('.fbAlbum').click(onFBAlbumSelected);
 	}
@@ -123,7 +123,7 @@
 	onFBPhotoSelected = function (){
 		// TODO set size
 		selectedPhoto = $(this).attr('id').replace('image_','');
-		contentHTML = '<p><img src="'+photosData[$(this).attr('id').replace('image_','')].src+'"></p><p><div id="fbValidatePhoto">Valider</div></p>';
+		contentHTML = '<p><img src="'+photosData[$(this).attr('id').replace('image_','')].src+'"></p><div id="fbValidatePhoto">Valider</div>';
 		$('#fbPhotoSelection').html(contentHTML);
 		$('#fbValidatePhoto').click(finishValidatingPhoto);
 	}
