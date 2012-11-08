@@ -1,136 +1,204 @@
 /**
  * @projectDescription Load User Facebook Albums and Images with jQuery
  *
- * @version 1.0
- * @author David Brukarz
+ * @version 1.1
+ * @author David Brukarz, Johannes Neumeier
  *	
- * Example on http://www.davel.fr/demo/facebook/getFacebookAlbums.html
- * Details, in french, at http://www.davel.fr/techblog/2010/06/plugin-jquery-get-facebook-albums-photos
- * Date : 17/06/2010
- * Copyright ©2010 David Brukarz <http://davel.fr/>
+ * Date: 08/11/2012
+ * Copyright ©2012 Johannes Neumeier <http://johannesneumeier.com>
+ *
+ * Details on original version, in french, at 
+ * http://www.davel.fr/techblog/2010/06/plugin-jquery-get-facebook-albums-photos
  *
  * Released under the MIT licence:
  * http://www.opensource.org/licenses/mit-license.php
  */
 
 
-(function($) {
+(function ($) {
 
-	var sessionVars;
-	var albumsData;
-	var photosData;
-	var selectedPhoto;
+	// namespace object for facebookAlbums plugin
+	var fbA = {};
+
+	fbA.albumsData = {};
+	fbA.photosData = {};
+	fbA.selectedPhoto = -1;
 	
-	var options = {
-					startConnectLabel:'Cliquez-ici pour vous connecter sur votre compte Facebook',
-					albumsLoadingLabel:'chargement des albums',
-					imagesLoadingLabel:'chargement des images',
-					needAuthorizeLabel:"Vous devez autoriser l'application.",
-					loadingImage:'images/loading.gif',
-					urlFacebookScript:'http://connect.facebook.net/fr_FR/all.js',
-					onImageSelected:null,
-					appId:null
-					}
-	
+    fbA.options = {
+        startConnectLabel  : 'Click to connect to Facebook',
+        albumsLoadingLabel : 'Loading albums',
+        imagesLoadingLabel : 'Loading images',
+        needAuthorizeLabel : 'Please grant access to the application',
+        pickImageLabel     : 'Pick image',
+        loadingImage       : 'images/loading.gif',
+        urlFacebookScript  : 'http://connect.facebook.net/en_US/all.js',
+        useAlbumCoverImages: true,
+        onImageSelected    : null,
+        selectLargeImage   : true,
+        ignoreEmptyAlbums  : true,
+        debug			   : false,
+        appId              : null
+        // TODO implement 'target' to direct output at specific DOM element
+        // TODO implement 'cssNamespace' to allow for customized css selectors
+    }
 
 	$.fn.getFacebookAlbums = function (pOptions) {
 		
-		$.extend(options,pOptions);
-		
-		if(options.appId == null){
-			$(this).html("The AppId is not set, try this code : $('#reference').getFacebookAlbums({appId:'YOUR-APP-ID'})");
+		$.extend(fbA.options, pOptions);
+
+		// fail if there is no appId in options
+		if (fbA.options.appId == null) {
+			// debug trace
+			if (fbA.options.debug) {
+				console.log('The AppId is not set');
+			}
 			return;
 		}
-		
-		$.getScript(options.urlFacebookScript);
-		
-		$('body').prepend('<div id="fb-root"></div>');
-		$(this).html('<div id="fbListAlbumsContainer"><a href="#">'+options.startConnectLabel+'</a></div><div id="fbImagesContainer"></div><div id="fbPhotoSelection"></div>');
-		
-		$("#fbListAlbumsContainer a").click(function(){
-			login();
-			return false;
-		})
+
+		// load fb sdk and init fb-root element if there are none present
+		if ($('#fb-root').length === 0) {
+			$('body').prepend('<div id="fb-root"></div>');
+		}
+		if (typeof FB === 'undefined') {
+			$.getScript(fbA.options.urlFacebookScript);
+		}
+
+		// append plugin mark-up
+		$(this).html('<div id="fbListAlbumsContainer"><a href="#">' + 
+		  fbA.options.startConnectLabel + '</a></div><div id="fbImagesContainer">' +
+		  '</div><div id="fbPhotoSelection"></div>');
+
+		$("#fbListAlbumsContainer a").click(function (event) {
+			event.preventDefault();
+			fbA.login();
+		});
 	}
 	
-	login = function(){
-		$('#fbListAlbumsContainer').html( options.albumsLoadingLabel + '<br><img src="'+options.loadingImage+'" />');
+	
+	/**
+	 * log user in to facebook and request access to user_photos scope
+	 */
+	fbA.login = function () {
+		$('#fbListAlbumsContainer').html(fbA.options.albumsLoadingLabel + 
+		    '<br><img src="' + fbA.options.loadingImage + '" />');
 		FB.init({
-			appId: options.appId,
-			cookie : true,
+			appId: fbA.options.appId,
+			cookie: true,
 			status: true
-		  });
-		  
-		//FB.getLoginStatus(function(response){console.log(response);});
+        });
 		
-		FB.login(function(response) {
-			if(response.status == "connected"){//response.scope && response.scope.indexOf('user_photos') != -1){
-				getAlbums();
-			 }else{
-				$('#fbListAlbumsContainer').html(options.needAuthorizeLabel);
+		FB.login(function (response) {
+			if (response.status == 'connected') {
+				fbA.getAlbums();
+			 } else {
+				$('#fbListAlbumsContainer').html(fbA.options.needAuthorizeLabel);
 			 }
 		 },{scope: 'user_photos'});
 	}
+
 	
-	getAlbums = function(){
-		FB.api(
-          {
-            method: 'photos.getAlbums'
-          },
-          onAlbumsGot
-        );		
+	/**
+	 * get user's albums
+	 */
+	fbA.getAlbums = function () {
+		FB.api('/me/albums', fbA.onAlbumsGot);		
 	}	
 
-	onAlbumsGot = function(data){
+
+	/**
+	 * process a response to the albums request
+	 */
+	fbA.onAlbumsGot = function (response) {
 		var counter = 0;
 		var contentHTML = '<ul>';
-		albumsData = data;
-		for (var i = 0; i < data.length; i++){
-			var album = data[i];
-			contentHTML += '<li class="fbAlbum" id="album_'+counter+'">'+album.name+'</li>';
-			counter++
+
+		// TODO validate response against errors
+
+		fbA.albumsData = response.data;
+		
+		// debug trace
+		if (fbA.options.debug) {
+			console.log(fbA.albumsData);
+		}
+
+		for (var i = 0; i < response.data.length; i++) {		    
+            var album = response.data[i];
+
+		    if (album.count > 0 || fbA.options.ignoreEmptyAlbums === true) {
+    			contentHTML += '<li class="fbAlbum" id="album_' + counter + '">';
+    			if (fbA.options.useAlbumCoverImages) {    			               
+					contentHTML += '<img src="https://graph.facebook.com/' + 
+    			                 album.cover_photo + '/picture" alt="' + 
+    			                 album.name + '" />';
+    			}
+    			contentHTML += album.name + '</li>';
+    			counter++;
+			}
 		}
 		contentHTML += '</ul>';
 		$('#fbListAlbumsContainer').html(contentHTML);
-		$('.fbAlbum').click(onFBAlbumSelected);
+		$('.fbAlbum').click(fbA.onFBAlbumSelected);
 	}
 	
-	onFBAlbumSelected = function (){
-		$('#fbImagesContainer').html(options.imagesLoadingLabel+'<br><img src="'+options.loadingImage+'">');
-		var aid = albumsData[$(this).attr('id').replace('album_','')].aid;
-		FB.api(
-          {
-            method: 'photos.get',
-			aid: aid
-          },
-          onPhotosGot
-        );		
+
+	/**
+	 * 
+	 */
+	fbA.onFBAlbumSelected = function () {
+		$('#fbImagesContainer').html(fbA.options.imagesLoadingLabel + 
+            '<br><img src="' + fbA.options.loadingImage + '">');
+		var aid = fbA.albumsData[$(this).attr('id').replace('album_','')].id;
+        FB.api(aid + '/photos', fbA.onPhotosGot);
 	}
+
 	
-	onPhotosGot = function(data){
+	/**
+	 * process photos for the selected album
+	 */
+	fbA.onPhotosGot = function (response) {
 		var counter = 0;
 		var contentHTML = '';
-		photosData = data;
-		for (var i = 0; i < data.length; i++){
-			var photo = data[i];
-			contentHTML += '<div class="fbBlock" id="image_'+counter+'"><img src="'+photo.src+'"/></div>';
-			counter++
+
+		// TODO validate response against errors
+
+		fbA.photosData = response.data;
+
+		// debug trace
+		if (fbA.options.debug) {
+			console.log(fbA.photosData);
+		}
+
+		for (var i = 0; i < response.data.length; i++) {
+			var photo = response.data[i];
+			contentHTML += '<div class="fbBlock" id="image_' + counter + 
+			                 '"><img src="' + photo.picture + '"/></div>';
+			counter++;
 		}
 		$('#fbImagesContainer').html(contentHTML);
-		$('.fbBlock').click(onFBPhotoSelected);
+		$('.fbBlock').click(fbA.onFBPhotoSelected);
 	}
 	
-	onFBPhotoSelected = function (){
-		// TODO set size
-		selectedPhoto = $(this).attr('id').replace('image_','');
-		contentHTML = '<p><img src="'+photosData[$(this).attr('id').replace('image_','')].src+'"></p><div id="fbValidatePhoto">Valider</div>';
+
+	/**
+	 * process photo select event
+	 */
+	fbA.onFBPhotoSelected = function () {
+		fbA.selectedPhoto = $(this).attr('id').replace('image_','');
+		contentHTML = '<p><img src="' + fbA.photosData[$(this).attr('id').replace('image_','')].picture + 
+		              '"></p><div id="fbValidatePhoto">' + fbA.options.pickImageLabel + '</div>';
 		$('#fbPhotoSelection').html(contentHTML);
-		$('#fbValidatePhoto').click(finishValidatingPhoto);
+		$('#fbValidatePhoto').click(fbA.finishValidatingPhoto);
 	}
+
 	
-	finishValidatingPhoto = function (){
-		options.onImageSelected(photosData[selectedPhoto].src_big);
+	/**
+	 * pass the selected image's url to the listener
+	 */
+	fbA.finishValidatingPhoto = function () {
+		var url = fbA.options.selectLargeImage 
+				? fbA.photosData[fbA.selectedPhoto].source
+				: fbA.photosData[fbA.selectedPhoto].picture
+		fbA.options.onImageSelected(url);
 	}
-	
-	
+
 })(jQuery);
