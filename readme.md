@@ -29,8 +29,7 @@ Remember to include a version of jQuery (1.4.2 or higher)
         , ... further options like text strings
     });
 
-#### Options available to configure the application to your needs: 
-* name: function (default value)
+#### Options available to configure the application to your needs _(default values in brackets)_: 
 * **appId***: String provided by Facebook in your app settings (null)
 * onImageSelected: Function with only one argument that returns the address of the image chosen by the user (null)
 * startConnectLabel: String label of the bond loguer and to begin the loading of the albums
@@ -39,5 +38,8 @@ Remember to include a version of jQuery (1.4.2 or higher)
 * needAuthorizeLabel: String error message if the user does not authorize the application to see his photographs
 * loadingImage: String way towards the image of preloading (images/loading.gif')
 * urlFacebookScript: String URL of the API Javascript of facebook (http://connect.facebook.net/en_US/all.js)
+* useAlbumCoverImages: Boolean flag to use album cover images or only album labels (true)
+* selectLargeImage: Boolean flag if to select the large image source or the small source (true)
+* ignoreEmptyAlbums: Boolean flag to leave albums with 0 images unlisted (true)
 
 \* mandatory!
