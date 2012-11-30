@@ -1,0 +1,49 @@
+#fbListAlbumsContainer, #fbImagesContainer, #fbPhotoSelection {
+    float: left;
+    position: relative;
+    height: 421px;
+    margin: 0 4px
+}
+
+#fbListAlbumsContainer {
+    width: 200px;
+}
+
+#fbImagesContainer {
+    width: 300px;
+    overflow: auto;
+}
+
+#fbPhotoSelection {
+    width: 150px;
+    text-align: center;
+}
+
+.fbBlock {
+    width: 130px;
+    height: 130px;
+    margin: 0 10px 10px 0;
+    cursor: pointer;
+    float: left;
+    position: relative;
+}
+
+#fbListAlbumsContainer ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.fbAlbum {
+    cursor: pointer;
+    margin: 3px 0;
+}
+
+#fbValidatePhoto {
+    width: 130px;
+    background-color: #3B5998;
+    color: #FFF;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
