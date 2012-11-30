@@ -1,12 +1,9 @@
 /**
  * @projectDescription Load User Facebook Albums and Images with jQuery
  *
- * @version 1.1
- * @author David Brukarz, Johannes Neumeier
+ * @version 1.2
+ * @authors David Brukarz, Johannes Neumeier
  *	
- * Date: 08/11/2012
- * Copyright ©2012 Johannes Neumeier <http://johannesneumeier.com>
- *
  * Details on original version, in french, at 
  * http://www.davel.fr/techblog/2010/06/plugin-jquery-get-facebook-albums-photos
  *
