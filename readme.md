@@ -2,7 +2,7 @@
 
 ***
 
-[Original plugin and further instructions in french at](http://www.davel.fr/techblog/2010/06/plugin-jquery-get-facebook-albums-photos/)
+[Original plugin and further instructions in french at](https://www.davel.fr/techblog/2010/06/plugin-jquery-get-facebook-albums-photos/)
 
 ***
 
@@ -13,7 +13,7 @@ Create a facebook app at https://developers.facebook.com/apps/ if you have not d
 
 ### 2. Include javascript and css links to your mark-up
 Remember to include a version of jQuery (1.4.2 or higher)
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" type="text/javascript"></script>
     <script src="js/jquery.getfacebookalbums.js" type="text/javascript"></script>
     <link rel="stylesheet" href="css/jquery.getfacebookalbums.css" />
 

@@ -5,10 +5,10 @@
  * @authors David Brukarz, Johannes Neumeier
  *	
  * Details on original version, in french, at 
- * http://www.davel.fr/techblog/2010/06/plugin-jquery-get-facebook-albums-photos
+ * https://www.davel.fr/techblog/2010/06/plugin-jquery-get-facebook-albums-photos
  *
  * Released under the MIT licence:
- * http://www.opensource.org/licenses/mit-license.php
+ * https://www.opensource.org/licenses/mit-license.php
  */
 
 
@@ -28,7 +28,7 @@
         needAuthorizeLabel : 'Please grant access to the application',
         pickImageLabel     : 'Pick image',
         loadingImage       : 'images/loading.gif',
-        urlFacebookScript  : 'http://connect.facebook.net/en_US/all.js',
+        urlFacebookScript  : 'https://connect.facebook.net/en_US/all.js',
         useAlbumCoverImages: true,
         onImageSelected    : null,
         selectLargeImage   : true,
